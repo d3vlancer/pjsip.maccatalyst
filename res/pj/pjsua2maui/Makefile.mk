@@ -95,22 +95,33 @@ maccatalyst:
 	@echo "========================================================="
 	@echo " Generating C# stubs and Obj-C++ wrapper for Catalyst... "
 	@echo "========================================================="
+
+	mkdir -p $(BASE_OUTPUT_DIR)/MacCatalyst/$(SWIG_MODULE)/$(ARCH)
 	mkdir -p $(BASE_OUTPUT_DIR)/MacCatalyst/$(SWIG_MODULE)
+
 	$(APP_SWIG) $(SWIG_CS_FLAGS) \
 		-DCC_HAS_INT64=1 \
 		-DPJ_APPLE=1 \
+		-DTARGET_OS_MACCATALYST=1 \
 		-D_MAC_CATALYST \
 		-outdir $(BASE_OUTPUT_DIR)/MacCatalyst/$(SWIG_MODULE) \
 		-o $(BASE_OUTPUT_DIR)/MacCatalyst/$(SWIG_MODULE)/pjsua2_wrap.mm \
 		$(SWIG_INPUTS)
+
 	@echo "Compiling MacCatalyst Static Library (libpjsua2.a)..."
-	# Compiles using target flags set in the pipeline (clang -target <arch>-apple-ios-macabi)
-	$(CXX) -c $(CXXFLAGS) $(INCLUDES) \
+
+	$(CXX) -c \
+		$(CXXFLAGS) \
+		$(CFLAGS) \
+		$(INCLUDES) \
 		$(BASE_OUTPUT_DIR)/MacCatalyst/$(SWIG_MODULE)/pjsua2_wrap.mm \
-		-o $(BASE_OUTPUT_DIR)/MacCatalyst/$(SWIG_MODULE)/pjsua2_wrap.o
-	$(AR) rcs $(BASE_OUTPUT_DIR)/MacCatalyst/$(SWIG_MODULE)/libpjsua2.a \
-		$(BASE_OUTPUT_DIR)/MacCatalyst/$(SWIG_MODULE)/pjsua2_wrap.o
-	rm -f $(BASE_OUTPUT_DIR)/MacCatalyst/$(SWIG_MODULE)/pjsua2_wrap.o
+		-o $(BASE_OUTPUT_DIR)/MacCatalyst/$(SWIG_MODULE)/$(ARCH)/pjsua2_wrap.o
+
+	$(AR) rcs \
+		$(BASE_OUTPUT_DIR)/MacCatalyst/$(SWIG_MODULE)/$(ARCH)/libpjsua2.a \
+		$(BASE_OUTPUT_DIR)/MacCatalyst/$(SWIG_MODULE)/$(ARCH)/pjsua2_wrap.o
+
+	rm -f $(BASE_OUTPUT_DIR)/MacCatalyst/$(SWIG_MODULE)/$(ARCH)/pjsua2_wrap.o
 
 clean:
 	rm -rf $(BASE_OUTPUT_DIR)/Android/$(SWIG_MODULE)/*
