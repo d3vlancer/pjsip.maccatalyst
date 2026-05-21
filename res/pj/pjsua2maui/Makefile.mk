@@ -1,7 +1,8 @@
 # Include core PJSIP build configurations
-include ../../../../build.mak
-include ../../../../version.mak
-include ../../Makefile.mk
+include ../../../../../build.mak
+include ../../../../../build/common.mak
+include ../../../../../version.mak
+include ../../../Makefile.mk
 
 SWIG_MODULE     = pjsua2
 MAUI_NAMESPACE  = pjsua2maui.$(SWIG_MODULE)
