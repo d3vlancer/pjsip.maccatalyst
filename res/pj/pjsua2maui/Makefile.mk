@@ -43,14 +43,14 @@ PJSIP_LIBS      = -L$(PJ_DIR)/pjlib/lib \
                   -lsdp-$(TARGET_NAME) \
                   -lpj-$(TARGET_NAME)
 
-.PHONY: all maui maui-android maui-ios maui-maccatalyst clean
+.PHONY: all maui android ios maccatalyst clean
 
 all: maui
 
 maui: maui-android maui-ios maui-maccatalyst
 
 # --- TARGET: ANDROID (.so) ---
-maui-android:
+android:
 	@echo "========================================================="
 	@echo " Generating C# stubs and C++ wrapper for Android...      "
 	@echo "========================================================="
@@ -69,7 +69,7 @@ maui-android:
 		$(PJSIP_LIBS) $(LDFLAGS)
 
 # --- TARGET: iOS (.a) ---
-maui-ios:
+ios:
 	@echo "========================================================="
 	@echo " Generating C# stubs and Obj-C++ wrapper for iOS...      "
 	@echo "========================================================="
@@ -91,7 +91,7 @@ maui-ios:
 	rm -f $(BASE_OUTPUT_DIR)/iOS/$(SWIG_MODULE)/pjsua2_wrap.o
 
 # --- TARGET: MacCatalyst (.a) ---
-maui-maccatalyst:
+maccatalyst:
 	@echo "========================================================="
 	@echo " Generating C# stubs and Obj-C++ wrapper for Catalyst... "
 	@echo "========================================================="
