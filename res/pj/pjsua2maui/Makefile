@@ -47,7 +47,7 @@ PJSIP_LIBS      = -L$(PJ_DIR)/pjlib/lib \
 
 all: maui
 
-maui: android ios maccatalyst
+maui: android ios mac
 
 generate_interface:
 	@echo "Creating custom MAUI SWIG interface..."
@@ -95,7 +95,7 @@ ios: generate_interface
 			$(BASE_OUTPUT_DIR)/iOS/$(SWIG_MODULE)/pjsua2_wrap.o
 	rm -f $(BASE_OUTPUT_DIR)/iOS/$(SWIG_MODULE)/pjsua2_wrap.o
 
-maccatalyst: generate_interface
+mac: generate_interface
 	@echo "========================================================="
 	@echo " Generating C# stubs and Obj-C++ wrapper for Catalyst... "
 	@echo "========================================================="
@@ -112,14 +112,18 @@ maccatalyst: generate_interface
 			-o $(BASE_OUTPUT_DIR)/MacCatalyst/$(SWIG_MODULE)/pjsua2_wrap.mm \
 			$(SWIG_INPUTS)
 
-	@echo "Compiling MacCatalyst Static Library (libpjsua2.a)..."
+	@echo "Compiling MacCatalyst Static Library (libpjsua2.a) for $(ARCH)..."
 
 	$(CXX) -c \
 			$(CXXFLAGS) \
 			$(CFLAGS) \
+			-DPJ_IS_LITTLE_ENDIAN=1 \
+			-DPJ_IS_BIG_ENDIAN=0 \
+			$(if $(filter arm64 aarch64,$(ARCH)),-D__aarch64__=1,) \
 			$(INCLUDES) \
 			$(BASE_OUTPUT_DIR)/MacCatalyst/$(SWIG_MODULE)/pjsua2_wrap.mm \
 			-o $(BASE_OUTPUT_DIR)/MacCatalyst/$(SWIG_MODULE)/$(ARCH)/pjsua2_wrap.o
+
 	$(AR) rcs \
 			$(BASE_OUTPUT_DIR)/MacCatalyst/$(SWIG_MODULE)/$(ARCH)/libpjsua2.a \
 			$(BASE_OUTPUT_DIR)/MacCatalyst/$(SWIG_MODULE)/$(ARCH)/pjsua2_wrap.o
