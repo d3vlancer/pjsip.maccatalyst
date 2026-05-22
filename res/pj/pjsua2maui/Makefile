@@ -17,9 +17,7 @@ SWIG_CS_FLAGS   = -csharp -c++ -w312,314,325,362,383,389,401,503 \
                   -I$(PJ_DIR)/pjmedia/include \
                   -I$(PJ_DIR)/pjnath/include \
                   -I$(PJ_DIR)/pjsip/include
-
-SWIG_INPUTS     = ./pjsua2_maui.i
-
+ 
 INCLUDES        = -I$(PJ_DIR)/pjlib/include \
                   -I$(PJ_DIR)/pjlib-util/include \
                   -I$(PJ_DIR)/pjmedia/include \
@@ -43,20 +41,13 @@ PJSIP_LIBS      = -L$(PJ_DIR)/pjlib/lib \
                   -lpjlib-util-$(TARGET_NAME) \
                   -lpj-$(TARGET_NAME)
 
-.PHONY: all maui android ios maccatalyst clean generate_interface
+.PHONY: all maui android ios maccatalyst clean  
 
 all: maui
 
 maui: android ios mac
 
-generate_interface:
-	@echo "Creating custom MAUI SWIG interface..."
-	@echo '%module $(SWIG_MODULE)' > $(SWIG_INPUTS)
-	@echo '%rename("%(regex:/^([a-z])(.*)/\\u\\1\\2/)s", match="function") "";' >> $(SWIG_INPUTS)
-	@echo '%rename("%(regex:/^([a-z])(.*)/\\u\\1\\2/)s", match="variable") "";' >> $(SWIG_INPUTS)
-	@echo '%include "../../pjsua2.i"' >> $(SWIG_INPUTS)
-
-android: generate_interface
+android: 
 	@echo "========================================================="
 	@echo " Generating C# stubs and C++ wrapper for Android...      "
 	@echo "========================================================="
@@ -67,14 +58,14 @@ android: generate_interface
 			-D_ANDROID \
 			-outdir $(BASE_OUTPUT_DIR)/Android/$(SWIG_MODULE) \
 			-o $(BASE_OUTPUT_DIR)/Android/$(SWIG_MODULE)/pjsua2_wrap.cpp \
-			$(SWIG_INPUTS)
+			$(SWIG_INTERFACE_FILES)
 	@echo "Compiling Android Shared Library (libpjsua2.so)..."
 	$(CXX) -shared -fPIC $(CXXFLAGS) $(INCLUDES) \
 			$(BASE_OUTPUT_DIR)/Android/$(SWIG_MODULE)/pjsua2_wrap.cpp \
 			-o $(BASE_OUTPUT_DIR)/Android/$(SWIG_MODULE)/lib/libpjsua2.so \
 			$(PJSIP_LIBS) $(LDFLAGS)
 
-ios: generate_interface
+ios: 
 	@echo "========================================================="
 	@echo " Generating C# stubs and Obj-C++ wrapper for iOS...      "
 	@echo "========================================================="
@@ -86,7 +77,7 @@ ios: generate_interface
 			-D_IOS \
 			-outdir $(BASE_OUTPUT_DIR)/iOS/$(SWIG_MODULE) \
 			-o $(BASE_OUTPUT_DIR)/iOS/$(SWIG_MODULE)/pjsua2_wrap.mm \
-			$(SWIG_INPUTS)
+			$(SWIG_INTERFACE_FILES)
 	@echo "Compiling iOS Static Library (libpjsua2.a)..."
 	$(CXX) -c $(CXXFLAGS) $(INCLUDES) \
 			$(BASE_OUTPUT_DIR)/iOS/$(SWIG_MODULE)/pjsua2_wrap.mm \
@@ -95,7 +86,7 @@ ios: generate_interface
 			$(BASE_OUTPUT_DIR)/iOS/$(SWIG_MODULE)/pjsua2_wrap.o
 	rm -f $(BASE_OUTPUT_DIR)/iOS/$(SWIG_MODULE)/pjsua2_wrap.o
 
-mac: generate_interface
+mac: 
 	@echo "========================================================="
 	@echo " Generating C# stubs and Obj-C++ wrapper for Catalyst... "
 	@echo "========================================================="
@@ -110,7 +101,7 @@ mac: generate_interface
 			-D_MAC_CATALYST \
 			-outdir $(BASE_OUTPUT_DIR)/MacCatalyst/$(SWIG_MODULE) \
 			-o $(BASE_OUTPUT_DIR)/MacCatalyst/$(SWIG_MODULE)/pjsua2_wrap.mm \
-			$(SWIG_INPUTS)
+			$(SWIG_INTERFACE_FILES)
 
 	@echo "Compiling MacCatalyst Static Library (libpjsua2.a) for $(ARCH)..."
 
@@ -134,5 +125,4 @@ clean:
 	rm -rf $(BASE_OUTPUT_DIR)/Android/$(SWIG_MODULE)/*
 	rm -rf $(BASE_OUTPUT_DIR)/iOS/$(SWIG_MODULE)/*
 	rm -rf $(BASE_OUTPUT_DIR)/MacCatalyst/$(SWIG_MODULE)/*
-	rm -f $(SWIG_INPUTS)
 	@echo "Output directories wiped successfully!"
