@@ -1,3 +1,27 @@
+/* 
+ * Endianness Auto-detection and arch for Mac Catalyst (Apple Silicon vs Intel)
+ * Resolves the compilation mismatch from SWIG at ARM64 runner from GitHub Actions
+ */
+#if defined(__arm64__) || defined(__aarch64__)
+#  ifndef PJ_IS_LITTLE_ENDIAN
+#    define PJ_IS_LITTLE_ENDIAN 1
+#  endif
+#  ifndef PJ_IS_BIG_ENDIAN
+#    define PJ_IS_BIG_ENDIAN    0
+#  endif
+#  // Garante que o config.h do PJSIP valide o ecossistema de 64-bits da Apple
+#  ifndef __aarch64__
+#    define __aarch64__         1
+#  endif
+#elif defined(__x86_64__) || defined(__i386__)
+#  ifndef PJ_IS_LITTLE_ENDIAN
+#    define PJ_IS_LITTLE_ENDIAN 1
+#  endif
+#  ifndef PJ_IS_BIG_ENDIAN
+#    define PJ_IS_BIG_ENDIAN    0
+#  endif
+#endif
+
 #define PJ_CONFIG_IPHONE 1
 
 /* 
