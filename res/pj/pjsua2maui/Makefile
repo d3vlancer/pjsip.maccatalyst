@@ -7,11 +7,9 @@ SWIG_MODULE     = pjsua2
 MAUI_NAMESPACE  = pjsua2maui.$(SWIG_MODULE)
 BASE_OUTPUT_DIR = ./pjsua2maui/Platforms
 
-# Ensures that the SWIG and the interface file be found locally or at the parent directory 
 APP_SWIG             ?= swig
 SWIG_INTERFACE_FILES  = ../../pjsua2.i
 
-# Global SWIG flags for C#
 SWIG_CS_FLAGS   = -csharp -c++ -w312,314,325,362,383,389,401,503 \
                   -namespace $(MAUI_NAMESPACE) \
                   -I$(PJ_DIR)/pjlib/include \
@@ -22,14 +20,12 @@ SWIG_CS_FLAGS   = -csharp -c++ -w312,314,325,362,383,389,401,503 \
 
 SWIG_INPUTS     = ./pjsua2_maui.i
 
-# Include paths required to compile the generated wrapper
 INCLUDES        = -I$(PJ_DIR)/pjlib/include \
                   -I$(PJ_DIR)/pjlib-util/include \
                   -I$(PJ_DIR)/pjmedia/include \
                   -I$(PJ_DIR)/pjnath/include \
                   -I$(PJ_DIR)/pjsip/include 
 
-# Dynamic list of all core PJSIP static libraries linked into the final bundle
 PJSIP_LIBS      = -L$(PJ_DIR)/pjlib/lib \
                   -L$(PJ_DIR)/pjlib-util/lib \
                   -L$(PJ_DIR)/pjmedia/lib \
@@ -47,10 +43,8 @@ PJSIP_LIBS      = -L$(PJ_DIR)/pjlib/lib \
                   -lpjlib-util-$(TARGET_NAME) \
                   -lpj-$(TARGET_NAME)
 
-# Adicionado generate_interface ao PHONY
 .PHONY: all maui android ios maccatalyst clean generate_interface
 
-# Corrigido para chamar os nomes exatos das regras abaixo
 all: maui
 
 maui: android ios maccatalyst
@@ -126,7 +120,6 @@ maccatalyst: generate_interface
 			$(INCLUDES) \
 			$(BASE_OUTPUT_DIR)/MacCatalyst/$(SWIG_MODULE)/pjsua2_wrap.mm \
 			-o $(BASE_OUTPUT_DIR)/MacCatalyst/$(SWIG_MODULE)/$(ARCH)/pjsua2_wrap.o
-
 	$(AR) rcs \
 			$(BASE_OUTPUT_DIR)/MacCatalyst/$(SWIG_MODULE)/$(ARCH)/libpjsua2.a \
 			$(BASE_OUTPUT_DIR)/MacCatalyst/$(SWIG_MODULE)/$(ARCH)/pjsua2_wrap.o
